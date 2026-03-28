@@ -19,7 +19,9 @@ const PORT = process.env.PORT || 5001;
 const allowedOrigins = [
   process.env.CLIENT_URL,
   "http://localhost:5173",
-  "http://localhost:5174"
+  "http://localhost:5174",
+  "https://ipl-predict-server.onrender.com/",
+  "https://ipl-predict-server.onrender.com/api",
 ].filter(Boolean);
 
 app.use(cors({
