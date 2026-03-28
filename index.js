@@ -6,6 +6,7 @@ import matchesRouter from "./routes/matches.js";
 import votesRouter from "./routes/votes.js";
 import predictionsRouter from "./routes/predictions.js";
 import authRouter from "./routes/authRoutes.js";
+import userRouter from "./routes/userRoutes.js";
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ app.use("/api/matches", matchesRouter);
 app.use("/api/votes", votesRouter);
 app.use("/api/predictions", predictionsRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/users", userRouter);
 
 // Health check
 app.get("/api/health", (req, res) => {

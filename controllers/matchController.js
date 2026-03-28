@@ -37,7 +37,52 @@ export const getMatchById = async (req, res) => {
 // @desc    Seed matches (for development)
 // @route   POST /api/matches/seed
 // @access  Private
+// @desc    Finish a match and award points
+// @route   PUT /api/matches/:id/finish
+// @access  Private (Admin)
+export const finishMatch = async (req, res) => {
+    const { id } = req.params;
+    const { winner } = req.body; // e.g., "SRH"
+
+    try {
+        const match = await Match.findById(id);
+        if (!match) return res.status(404).json({ success: false, message: 'Match not found' });
+
+        if (match.status === 'completed') {
+            return res.status(400).json({ success: false, message: 'Match already completed' });
+        }
+
+        // 1. Update match status and winner
+        match.status = 'completed';
+        match.winner = winner;
+        await match.save();
+
+        // 2. Find all votes for this match
+        const Vote = (await import('../models/Vote.js')).default;
+        const User = (await import('../models/User.js')).default;
+        
+        const votes = await Vote.find({ match: id });
+
+        // 3. Process each vote
+        for (const vote of votes) {
+            const isCorrect = vote.selectedTeam === winner;
+            vote.isCorrect = isCorrect;
+            await vote.save();
+
+            if (isCorrect) {
+                // Award points/increment totalCorrect for the user
+                await User.findByIdAndUpdate(vote.user, { $inc: { totalCorrect: 1 } });
+            }
+        }
+
+        res.json({ success: true, message: `Match finished! Winner: ${winner}. Points awarded.`, match });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 export const seedMatches = async (req, res) => {
+    // ... Existing seedMatches code ...
     const defaultMatches = [
         {
             matchNumber: 1,
