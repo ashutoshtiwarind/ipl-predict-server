@@ -22,6 +22,7 @@ const allowedOrigins = [
   "http://localhost:5174",
   "https://ipl-predict-server.onrender.com/",
   "https://ipl-predict-server.onrender.com/api",
+  "https://ipl-predict-two.vercel.app/",
 ].filter(Boolean);
 
 app.use(cors({
